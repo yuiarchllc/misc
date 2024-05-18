@@ -1,0 +1,28 @@
+version: '3.7'
+
+services:
+  app:
+    container_name: app
+    image: php:8.3-apache
+    entrypoint: >
+      sh -c "docker-php-ext-install pdo_mysql &&
+        apache2-foreground"
+    volumes:
+      - ./docker/app/src:/var/www/html
+    ports:
+      - 8001:80
+  db:
+    container_name: db
+    image: mysql:8.3.0
+    platform: linux/amd64
+    ports:
+      - "33060:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+    volumes:
+      - ./docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./docker/db/data:/var/lib/mysql
+      - ./docker/db/scripts:/docker-entrypoint-initdb.d
